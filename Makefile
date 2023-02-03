@@ -3,6 +3,7 @@ TARGET=sckitndi
 RELEASE_DIR = target/release
 
 APP_NAME = SCKitNDI.app
+ENTILEMENT_PLIST = osx/ent.plist
 APP_TEMPLATE = osx/$(APP_NAME)
 APP_DIR = $(RELEASE_DIR)/osx
 APP_BINARY = $(RELEASE_DIR)/$(TARGET)
@@ -27,7 +28,7 @@ app: $(TARGET)
 	install_name_tool -change "@rpath/libndi.dylib" $(LIBNDI_DYLIB) $(APP_BINARY_DIR)/$(TARGET)
 	touch -r "$(APP_BINARY)" "$(APP_DIR)/$(APP_NAME)"
 	codesign --remove-signature "$(APP_DIR)/$(APP_NAME)"
-	codesign --force --deep --sign - "$(APP_DIR)/$(APP_NAME)"
+	codesign --force --deep --entitlements "$(ENTILEMENT_PLIST)" --sign - "$(APP_DIR)/$(APP_NAME)"
 	@echo "Created '$(APP_NAME)' in '$(APP_DIR)'"
 
 .PHONY: app $(TARGET)
