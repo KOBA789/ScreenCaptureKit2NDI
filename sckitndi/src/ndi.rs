@@ -17,15 +17,18 @@ impl Sender {
             clock_audio: false,
         };
         let send_instance = unsafe { ndi_sys::NDIlib_send_create(&send_decr) };
-        Self { ndi_send_instance: send_instance }
+        Self {
+            ndi_send_instance: send_instance,
+        }
     }
 
     pub unsafe fn send_video(&self, width: i32, height: i32, data: *mut u8) {
         let video_frame = ndi_sys::NDIlib_video_frame_v2_t {
-            xres: width as i32,
-            yres: height as i32,
+            xres: width,
+            yres: height,
             FourCC: ndi_sys::NDIlib_FourCC_video_type_e::NDIlib_FourCC_video_type_BGRX,
-            frame_format_type: ndi_sys::NDIlib_frame_format_type_e::NDIlib_frame_format_type_progressive,
+            frame_format_type:
+                ndi_sys::NDIlib_frame_format_type_e::NDIlib_frame_format_type_progressive,
             p_data: data,
             ..Default::default()
         };

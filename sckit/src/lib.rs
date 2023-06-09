@@ -185,7 +185,7 @@ impl ShareableContent {
         unsafe {
             let _: () = msg_send![
                 class!(SCShareableContent),
-                getShareableContentExcludingDesktopWindows: false onScreenWindowsOnly: true completionHandler: block
+                getShareableContentExcludingDesktopWindows:false onScreenWindowsOnly:true completionHandler:block
             ];
         }
     }
@@ -347,6 +347,7 @@ impl ContentFilter {
     }
 }
 
+#[derive(Clone)]
 pub struct Stream(StrongPtr);
 
 impl Stream {
@@ -379,9 +380,10 @@ impl Stream {
         let stream_output = Box::new(stream_output);
         let delegate = unsafe {
             let delegate: id = msg_send![*STREAM_OUTPUT_DELEGATE, alloc];
+            let delegate: id = msg_send![delegate, init];
             let inner_ptr = Box::into_raw(stream_output) as *const c_void;
             let _: () = msg_send![delegate, setInner: inner_ptr];
-            StrongPtr::new(msg_send![delegate, init])
+            StrongPtr::new(delegate)
         };
         let error: id = null_mut();
         unsafe {

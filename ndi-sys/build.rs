@@ -44,7 +44,9 @@ impl bindgen::callbacks::ParseCallbacks for TrimPrefixCallbacks {
         _variant_value: bindgen::callbacks::EnumVariantValue,
     ) -> Option<String> {
         let enum_name = enum_name?.strip_prefix("enum ")?.strip_suffix("_e")?;
-        let variant_name = original_variant_name.strip_prefix(enum_name)?.strip_prefix('_')?;
+        let variant_name = original_variant_name
+            .strip_prefix(enum_name)?
+            .strip_prefix('_')?;
         Some(variant_name.to_string())
     }
 }

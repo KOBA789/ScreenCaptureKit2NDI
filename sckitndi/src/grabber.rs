@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 
 use cocoa_foundation::foundation::NSInteger;
 use core_graphics_types::geometry::{CGPoint, CGRect, CGSize};
@@ -10,12 +10,14 @@ use crate::ndi;
 
 pub struct Grabber {
     sender: ndi::Sender,
+    stream: Mutex<Option<Stream>>,
 }
 
 impl Grabber {
     pub fn new() -> Grabber {
         let sender = ndi::Sender::new("sckitndi");
-        Self { sender }
+        let stream = Mutex::new(None);
+        Self { sender, stream }
     }
 
     pub fn start(self: &Arc<Self>) {
@@ -66,6 +68,10 @@ impl Grabber {
             stream_config.set_destination_rect(destination_rect);
             stream_config.set_queue_depth(5);
             let stream = Stream::new(filter, stream_config);
+            {
+                let mut this_stream = this.stream.lock().unwrap();
+                *this_stream = Some(stream.clone());
+            }
             let did_add_output = stream.add_stream_output(this as Arc<dyn StreamOutput>, 0);
             assert!(did_add_output);
             stream.start_capture(|ret| {
